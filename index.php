@@ -1,98 +1,103 @@
 <?php
 require_once 'config/db.php';
-
-// Query para a lista de Pokémon
-$sql_pokemon = "SELECT id, nome FROM pokemon ORDER BY nome ASC";
+$sql_pokemon = "SELECT id, nome FROM pokemon ORDER BY id ASC";
 $resultado_pokemon = mysqli_query($conexao, $sql_pokemon);
 
-// Query para buscar TODA a tabela de efetividade de tipos
+// (O código para carregar a tabela de eficácia permanece o mesmo)
 $sql_eficacia = "SELECT * FROM tipo_eficacia";
 $resultado_eficacia = mysqli_query($conexao, $sql_eficacia);
-
 $tabela_eficacia = [];
 while ($linha = mysqli_fetch_assoc($resultado_eficacia)) {
-    // Organiza os dados numa estrutura fácil de usar em JS: { '1-13': 0.5 }
     $chave = $linha['atacante_tipo_id'] . '-' . $linha['defensor_tipo_id'];
     $tabela_eficacia[$chave] = (float)$linha['multiplicador'];
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Dano Pokémon - G1</title>
+    <title>Calculadora de Dano Pokémon - Batalha</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="public/css/style.css">
-    
     <script>
         const TabelaDeEficacia = <?php echo json_encode($tabela_eficacia); ?>;
     </script>
 </head>
 <body>
 
-    <header>
-        <h1>Calculadora de Dano Pokémon (Geração 1)</h1>
-    </header>
-
-    <main class="calculadora-container">
-        
-        <section class="coluna-pokemon" id="coluna_atacante">
-            <h2>Atacante</h2>
-            
-            <div>
-                <label for="pokemon_atacante">Pokémon:</label>
-                <select name="pokemon_atacante" id="pokemon_atacante" class="seletor-pokemon">
-                    <option value="">Selecione um Pokémon</option>
-                    <?php
-                        while ($pokemon = mysqli_fetch_assoc($resultado_pokemon)) {
-                            echo "<option value='" . $pokemon['id'] . "'>" . htmlspecialchars($pokemon['nome']) . "</option>";
-                        }
-                    ?>
-                </select>
+    <div class="battle-scene">
+        <div class="opponent-area">
+            <div class="status-box" id="defensor_status">
+                <div class="info">
+                    <span id="defensor_nome">DEFENSOR</span>
+                    <small>Lv50</small>
+                </div>
+                <div class="hp-bar-container">
+                    <div class="hp-bar" id="defensor_hp_bar"></div>
+                </div>
+                <div class="hp-text">
+                    <span id="defensor_hp_atual">--</span> / <span id="defensor_hp_max">--</span>
+                </div>
             </div>
-            
-            <div class="pokemon-details" id="details_atacante"></div>
-            
-            <div id="golpes_atacante_container"></div>
-
-            <div class="opcoes-container" id="opcoes_atacante_container">
-                <label for="acerto_critico">
-                    <input type="checkbox" id="acerto_critico" name="acerto_critico"> Forçar Acerto Crítico
-                </label>
+            <div class="sprite-container">
+                <img id="defensor_sprite" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Sprite do Defensor">
             </div>
-        </section>
+        </div>
 
-        <section class="coluna-pokemon" id="coluna_defensor">
-            <h2>Defensor</h2>
-            
-            <div>
-                <label for="pokemon_defensor">Pokémon:</label>
-                <select name="pokemon_defensor" id="pokemon_defensor" class="seletor-pokemon">
-                    <option value="">Selecione um Pokémon</option>
-                    <?php
-                        mysqli_data_seek($resultado_pokemon, 0);
-                        while ($pokemon = mysqli_fetch_assoc($resultado_pokemon)) {
-                            echo "<option value='" . $pokemon['id'] . "'>" . htmlspecialchars($pokemon['nome']) . "</option>";
-                        }
-                    ?>
-                </select>
+        <div class="player-area">
+            <div class="sprite-container">
+                <img id="atacante_sprite" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Sprite do Atacante">
             </div>
+            <div class="status-box" id="atacante_status">
+                <div class="info">
+                    <span id="atacante_nome">ATACANTE</span>
+                    <small>Lv50</small>
+                </div>
+                <div class="hp-bar-container">
+                    <div class="hp-bar" id="atacante_hp_bar"></div>
+                </div>
+                 <div class="hp-text">
+                    <span id="atacante_hp_atual">--</span> / <span id="atacante_hp_max">--</span>
+                </div>
+            </div>
+        </div>
 
-            <div class="pokemon-details" id="details_defensor"></div>
-        </section>
-
-    </main>
-    
-    <div class="resultado-container">
-        <button id="calcular_btn">Calcular Dano</button>
-        <div id="resultado_dano"></div>
+        <div class="action-box">
+            <div class="controls-container">
+                <div class="selection-column">
+                    <div>
+                        <label for="pokemon_atacante">Atacante:</label>
+                        <select name="pokemon_atacante" id="pokemon_atacante">
+                             <option value="">Selecione...</option>
+                             <?php mysqli_data_seek($resultado_pokemon, 0); while ($pokemon = mysqli_fetch_assoc($resultado_pokemon)) { echo "<option value='" . $pokemon['id'] . "'>#" . $pokemon['id'] . " " . htmlspecialchars($pokemon['nome']) . "</option>"; } ?>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="pokemon_defensor">Defensor:</label>
+                        <select name="pokemon_defensor" id="pokemon_defensor">
+                             <option value="">Selecione...</option>
+                             <?php mysqli_data_seek($resultado_pokemon, 0); while ($pokemon = mysqli_fetch_assoc($resultado_pokemon)) { echo "<option value='" . $pokemon['id'] . "'>#" . $pokemon['id'] . " " . htmlspecialchars($pokemon['nome']) . "</option>"; } ?>
+                        </select>
+                    </div>
+                </div>
+                <div class="attack-column">
+                     <div id="golpes_atacante_container">
+                        </div>
+                     <div id="opcoes_atacante_container">
+                        <label><input type="checkbox" id="acerto_critico"> Acerto Crítico</label>
+                     </div>
+                </div>
+            </div>
+            <div class="results-container">
+                <button id="calcular_btn">CALCULAR</button>
+                <div id="resultado_dano">Selecione os Pokémon e um golpe para calcular o dano.</div>
+            </div>
+        </div>
     </div>
-    
-    <script src="public/js/script.js"></script>
 
+    <script src="public/js/script.js"></script>
 </body>
 </html>
-<?php
-mysqli_close($conexao);
-?>
