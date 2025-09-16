@@ -1,4 +1,5 @@
-/* public/css/style.css */
+/* Importa a fonte estilo Pixel */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
 * {
     margin: 0;
@@ -7,73 +8,141 @@
 }
 
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f0f2f5;
-    color: #333;
-    padding: 20px;
-}
-
-h1 {
-    text-align: center;
-    margin-bottom: 30px;
-    color: #e44d26;
-}
-
-.calculadora-container {
+    font-family: 'Press Start 2P', cursive;
+    background-color: #1a1a1a;
+    color: #fff;
     display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
     justify-content: center;
+    align-items: center;
+    min-height: 100vh;
 }
 
-.coluna-pokemon {
-    background-color: #fff;
-    padding: 20px;
+.battle-scene {
+    width: 100%;
+    max-width: 800px;
+    border: 8px solid #c0c0c0;
+    background: #fff url('../images/fundo.jpg') no-repeat center center; /* Fundo de batalha genérico */
+    background-size: cover;
+    padding: 1rem;
+    position: relative;
+    image-rendering: pixelated; /* Para as imagens ficarem com estilo retro */
+}
+
+/* --- Áreas do Jogador e Oponente --- */
+.opponent-area, .player-area {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    height: 180px;
+}
+.opponent-area {
+    align-items: flex-start;
+}
+
+/* --- Sprites --- */
+.sprite-container {
+    flex-basis: 50%;
+}
+.sprite-container img {
+    width: 160px;
+    height: 160px;
+}
+.opponent-area .sprite-container {
+    text-align: right;
+}
+.player-area .sprite-container {
+    text-align: left;
+}
+
+/* --- Caixas de Status e Barras de Vida --- */
+.status-box {
+    flex-basis: 50%;
+    border: 4px solid #333;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    flex: 1 1 300px;
+    padding: 0.5rem;
+    background-color: rgba(240, 240, 240, 0.9);
+    color: #333;
+}
+.status-box .info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+    font-size: 0.8rem;
+}
+.hp-bar-container {
+    width: 100%;
+    height: 12px;
+    background-color: #777;
+    border: 2px solid #333;
+    border-radius: 4px;
+    overflow: hidden;
+}
+.hp-bar {
+    height: 100%;
+    width: 100%; /* Começa em 100% */
+    background-color: #22c55e; /* Verde */
+    transition: width 1s ease-in-out, background-color 0.5s;
+}
+.hp-bar.yellow { background-color: #facc15; } /* Amarelo */
+.hp-bar.red { background-color: #ef4444; } /* Vermelho */
+
+.hp-text {
+    text-align: right;
+    font-size: 0.7rem;
+    margin-top: 4px;
+}
+
+/* --- Caixa de Ações --- */
+.action-box {
+    border: 4px solid #333;
+    border-radius: 8px;
+    margin-top: 1rem;
+    min-height: 150px;
+    background-color: rgba(240, 240, 240, 0.95);
+    color: #333;
+    padding: 1rem;
     display: flex;
     flex-direction: column;
-    gap: 15px;
 }
-
-.coluna-pokemon h2 {
-    text-align: center;
-    border-bottom: 2px solid #eee;
-    padding-bottom: 10px;
-    margin-bottom: 10px;
+.controls-container {
+    display: flex;
+    gap: 1rem;
+    flex: 1;
 }
-
-label {
-    font-weight: bold;
-    display: block;
-    margin-bottom: 5px;
+.selection-column, .attack-column {
+    flex-basis: 50%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
-
-select, input {
+select {
     width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    font-family: 'Press Start 2P', cursive;
+    padding: 0.3rem;
 }
-
-.resultado-container {
-    text-align: center;
-    margin-top: 20px;
+label {
+    font-size: 0.7rem;
 }
-
+#opcoes_atacante_container {
+    margin-top: auto;
+}
+.results-container {
+    display: flex;
+    align-items: center;
+    margin-top: 1rem;
+    border-top: 2px solid #ccc;
+    padding-top: 1rem;
+}
 #calcular_btn {
-    padding: 10px 20px;
-    font-size: 16px;
+    font-family: 'Press Start 2P', cursive;
+    padding: 0.5rem 1rem;
+    border: 2px solid #333;
     background-color: #e44d26;
     color: white;
-    border: none;
-    border-radius: 5px;
     cursor: pointer;
-    margin-bottom: 15px;
 }
-
 #resultado_dano {
-    font-size: 1.2em;
-    font-weight: bold;
+    margin-left: 1rem;
+    font-size: 0.8rem;
+    flex: 1;
 }
