@@ -1,8 +1,6 @@
 <?php
-// Inicia a sessão no topo de CADA página que precisa dela
 session_start();
 
-// Se o utilizador já estiver logado, redireciona para o painel de admin
 if (isset($_SESSION['user_id'])) {
     header("Location: admin/index.php");
     exit;
@@ -10,69 +8,82 @@ if (isset($_SESSION['user_id'])) {
 
 require_once 'config/db.php';
 $erro_login = '';
+$sucesso = '';
 
-// Verifica se o formulário foi submetido
+if (isset($_SESSION['sucesso_registo'])) {
+    $sucesso = $_SESSION['sucesso_registo'];
+    unset($_SESSION['sucesso_registo']);
+}
+if (isset($_SESSION['sucesso_reset'])) {
+    $sucesso = $_SESSION['sucesso_reset'];
+    unset($_SESSION['sucesso_reset']);
+}
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = $_POST['email'];
-    $senha = $_POST['senha'];
-
-    if (empty($email) || empty($senha)) {
-        $erro_login = "Por favor, preencha ambos os campos.";
+    if ($conexao === false) {
+        $erro_login = "Erro de configuração: A base de dados não foi encontrada.";
     } else {
-        // Busca o utilizador na base de dados
-        $sql = "SELECT id, email, senha, perfil FROM usuarios WHERE email = ?";
-        $stmt = mysqli_prepare($conexao, $sql);
-        mysqli_stmt_bind_param($stmt, 's', $email);
-        mysqli_stmt_execute($stmt);
-        $resultado = mysqli_stmt_get_result($stmt);
+        $email = $_POST['email'];
+        $senha = $_POST['senha'];
 
-        if ($utilizador = mysqli_fetch_assoc($resultado)) {
-            // Utilizador encontrado, agora verifica a senha
-            // Compara a senha enviada com o hash guardado no banco de dados
-            if (password_verify($senha, $utilizador['senha'])) {
-                // Senha correta! Inicia a sessão.
-                $_SESSION['user_id'] = $utilizador['id'];
-                $_SESSION['user_email'] = $utilizador['email'];
-                $_SESSION['user_perfil'] = $utilizador['perfil'];
+        if (empty($email) || empty($senha)) {
+            $erro_login = "Por favor, preencha ambos os campos.";
+        } else {
+            $sql = "SELECT id, email, senha, perfil FROM usuarios WHERE email = ?";
+            $stmt = mysqli_prepare($conexao, $sql);
+            mysqli_stmt_bind_param($stmt, 's', $email);
+            mysqli_stmt_execute($stmt);
+            $resultado = mysqli_stmt_get_result($stmt);
 
-                // Redireciona para a página de administração
-                header("Location: admin/index.php");
-                exit; // Garante que o script para após o redirecionamento
+            if ($utilizador = mysqli_fetch_assoc($resultado)) {
+                if (password_verify($senha, $utilizador['senha'])) {
+                    $_SESSION['user_id'] = $utilizador['id'];
+                    $_SESSION['user_email'] = $utilizador['email'];
+                    $_SESSION['user_perfil'] = $utilizador['perfil'];
+                    header("Location: admin/index.php");
+                    exit;
+                } else {
+                    $erro_login = "Email ou senha inválidos.";
+                }
             } else {
                 $erro_login = "Email ou senha inválidos.";
             }
-        } else {
-            $erro_login = "Email ou senha inválidos.";
+            mysqli_stmt_close($stmt);
         }
-        mysqli_stmt_close($stmt);
+        if ($conexao) mysqli_close($conexao);
     }
-    mysqli_close($conexao);
 }
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Admin</title>
-    <link rel="stylesheet" href="public/css/style.css"> </head>
+    <title>Login</title>
+    <link rel="stylesheet" href="public/css/style.css">
+    <style>.login-container a { color: #007bff; text-decoration: none; } .login-container a:hover { text-decoration: underline; }</style>
+</head>
 <body>
-    <div class="login-container" style="max-width: 400px; margin: 50px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-        <h2>Login de Administrador</h2>
+    <div class="login-container" style="max-width: 400px; margin: 50px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); color: #333; font-family: Arial, sans-serif;">
+        <h2 style="text-align:center;">Login</h2>
+        <?php if (!empty($erro_login)): ?><p style="color: red; text-align:center;"><?php echo $erro_login; ?></p><?php endif; ?>
+        <?php if (!empty($sucesso)): ?><p style="color: green; text-align:center;"><?php echo $sucesso; ?></p><?php endif; ?>
+        
         <form action="login.php" method="POST">
             <div style="margin-bottom: 15px;">
                 <label for="email">Email:</label>
-                <input type="email" name="email" id="email" required>
+                <input type="email" name="email" id="email" required style="width: 100%; padding: 8px; font-family: Arial;">
             </div>
             <div style="margin-bottom: 15px;">
                 <label for="senha">Senha:</label>
-                <input type="password" name="senha" id="senha" required>
+                <input type="password" name="senha" id="senha" required style="width: 100%; padding: 8px; font-family: Arial;">
             </div>
-            <?php if ($erro_login): ?>
-                <p style="color: red;"><?php echo $erro_login; ?></p>
-            <?php endif; ?>
-            <button type="submit" id="calcular_btn" style="width: 100%; border: none;">Entrar</button>
+            <button type="submit" id="calcular_btn" style="width: 100%; border: none; font-size: 1em;">Entrar</button>
         </form>
+
+        <div style="display: flex; justify-content: space-between; margin-top: 15px; font-size: 0.8em;">
+            <a href="esqueci_senha.php">Esqueceu a senha?</a>
+            <a href="registrar.php">Não tem uma conta? Registe-se</a>
+        </div>
     </div>
 </body>
 </html>

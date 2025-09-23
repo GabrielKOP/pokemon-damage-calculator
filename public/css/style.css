@@ -24,7 +24,7 @@ body {
     width: 100%;
     max-width: 800px;
     border: 8px solid #c0c0c0;
-    background: #fff url('../images/fundo-batalha.png') no-repeat center center;
+    background: #fff url('../images/fundo.jpg') no-repeat center center;
     background-size: cover;
     padding: 1rem;
     position: relative;

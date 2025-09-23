@@ -23,7 +23,6 @@ if (!isset($_SESSION['user_id'])) {
         <nav>
             <ul>
                 <li><a href="gerir_golpes.php">Gerir Golpes dos Pokémon</a></li>
-                <li><a href="cadastrar_admin.php">Cadastrar Novo Administrador</a></li>
             </ul>
         </nav>
         <br>
