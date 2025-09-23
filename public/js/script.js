@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (tipo === 'atacante') {
                     statsAtacante = data;
                     spriteElement.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/${data.id}.png`;
-                    golpesContainer.innerHTML = ''; // Limpa golpes antigos
+                    golpesContainer.innerHTML = '';
                     if (data.golpes && data.golpes.length > 0) {
                         let golpesHtml = '<label for="golpe_selecionado">Golpe:</label><select id="golpe_selecionado">';
                         data.golpes.forEach(golpe => {
@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 nomeElement.textContent = data.nome.toUpperCase();
                 hpAtualElement.textContent = data.hp;
                 hpMaxElement.textContent = data.hp;
-                hpBarElement.style.width = '100%'; // Reseta a barra de vida
+                hpBarElement.style.width = '100%';
                 updateHpBarColor(hpBarElement, 100);
             })
             .catch(error => console.error('Erro:', error));
@@ -73,11 +73,24 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // ... (TODA a lógica de cálculo de dano permanece EXATAMENTE A MESMA) ...
-        const levelAtacante = 50, isCritico = criticoCheckbox.checked;
+        const levelAtacante = 50;
+        const isCritico = criticoCheckbox.checked;
+
         const seletorGolpe = document.getElementById('golpe_selecionado');
         const opt = seletorGolpe.options[seletorGolpe.selectedIndex];
-        const poderGolpe = parseInt(opt.dataset.poder), categoriaGolpe = opt.dataset.categoria, tipoGolpeId = opt.dataset.tipoId;
+        
+        const poderGolpe = parseInt(opt.dataset.poder);
+
+        // --- VERIFICAÇÃO ADICIONADA ---
+        // Se o poder do golpe for 0, ele não causa dano.
+        if (poderGolpe === 0) {
+            resultadoDano.innerHTML = `O golpe ${opt.text} não causa dano direto.`;
+            return; // Sai da função imediatamente.
+        }
+        // --- FIM DA VERIFICAÇÃO ---
+        
+        const categoriaGolpe = opt.dataset.categoria;
+        const tipoGolpeId = opt.dataset.tipoId;
         const tipo1AtacanteId = statsAtacante.tipo1_id, tipo2AtacanteId = statsAtacante.tipo2_id;
         let ataqueUsado, defesaUsada;
         if (categoriaGolpe === 'fisico') {
@@ -103,25 +116,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const danoModificado = Math.floor(danoBase * multiplicadorStab * multiplicadorEficaciaTotal);
         const danoMinimo = Math.floor(danoModificado * 0.85);
         const danoMaximo = danoModificado;
-        // --- Fim da lógica de cálculo ---
-
-        // --- NOVO: Lógica da Barra de Vida Interativa ---
+        
         const danoMedio = Math.floor((danoMinimo + danoMaximo) / 2);
         const hpMaxDefensor = parseInt(statsDefensor.hp);
         const hpAtualElement = document.getElementById('defensor_hp_atual');
         const hpBarElement = document.getElementById('defensor_hp_bar');
         const hpAnterior = parseInt(hpAtualElement.textContent);
         
-        // Calcula o HP restante e garante que não seja negativo
         const hpRestante = Math.max(0, hpAnterior - danoMedio);
         const hpPercentRestante = (hpRestante / hpMaxDefensor) * 100;
 
-        // Atualiza o texto e a barra de vida
         hpAtualElement.textContent = hpRestante;
         hpBarElement.style.width = `${hpPercentRestante}%`;
         updateHpBarColor(hpBarElement, hpPercentRestante);
         
-        // Constrói e exibe a mensagem de resultado
         let mensagemEficacia = '';
         if (multiplicadorEficaciaTotal >= 2.0) mensagemEficacia = ' É super efetivo!';
         else if (multiplicadorEficaciaTotal > 0 && multiplicadorEficaciaTotal < 1.0) mensagemEficacia = ' Não é muito efetivo...';

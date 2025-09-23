@@ -1,9 +1,15 @@
 <?php
 require_once 'config/db.php';
+
+// VERIFICAÇÃO PRINCIPAL: Confere se a base de dados existe
+if ($conexao === false) {
+    die("<h1>Bem-vindo! Parece que esta é uma nova instalação.</h1><p>A base de dados 'pokemon_calculator' não foi encontrada. Por favor, execute primeiro os scripts de setup na pasta <strong>/scripts/</strong> para criar e popular a base de dados.</p><p>A ordem de execução recomendada é:<ol><li>scripts/criar_estrutura.php(cria o banco de dados)</li><li>scripts/povoar_pokemon_e_tipos.php (povoa as tabelas com os pokémon e tipos)</li><li>scripts/povoar_golpes.php (cria os golpes)</li><li>scripts/ligar_golpes_a_pokemon.php (liga os golpes aos pokémon)</li></ol></p><p>Depois, não se esqueça de executar o script para criar o utilizador administrador.</p>");
+}
+
+// Se o script continuar, a conexão foi um sucesso.
 $sql_pokemon = "SELECT id, nome FROM pokemon ORDER BY id ASC";
 $resultado_pokemon = mysqli_query($conexao, $sql_pokemon);
 
-// (O código para carregar a tabela de eficácia permanece o mesmo)
 $sql_eficacia = "SELECT * FROM tipo_eficacia";
 $resultado_eficacia = mysqli_query($conexao, $sql_eficacia);
 $tabela_eficacia = [];
@@ -84,8 +90,7 @@ while ($linha = mysqli_fetch_assoc($resultado_eficacia)) {
                     </div>
                 </div>
                 <div class="attack-column">
-                     <div id="golpes_atacante_container">
-                        </div>
+                     <div id="golpes_atacante_container"></div>
                      <div id="opcoes_atacante_container">
                         <label><input type="checkbox" id="acerto_critico"> Acerto Crítico</label>
                      </div>
@@ -101,3 +106,8 @@ while ($linha = mysqli_fetch_assoc($resultado_eficacia)) {
     <script src="public/js/script.js"></script>
 </body>
 </html>
+<?php
+if ($conexao) {
+    mysqli_close($conexao);
+}
+?>

@@ -1,5 +1,5 @@
 <?php
-// scripts/povoar_pokemon_e_tipos.php (VERSÃO TUDO-EM-UM: CRIA E POVOA)
+// scripts/povoar_pokemon_e_tipos.php (VERSÃO COMPLETA E ATUALIZADA)
 
 // --- CONFIGURAÇÕES INICIAIS ---
 set_time_limit(0);
@@ -21,90 +21,29 @@ function print_status($message, $type = 'info') {
 }
 
 if (php_sapi_name() !== 'cli') {
-    echo "<h1>Iniciando Setup Completo do Banco de Dados via PokéAPI</h1>";
-    echo "<p>Este processo pode demorar vários minutos. Por favor, seja paciente.</p>";
+    echo "<h1>Iniciando População de Pokémon, Tipos e Regras de Eficácia</h1>";
+    echo "<p>Este processo pode demorar alguns minutos.</p>";
 }
 
 require_once dirname(__DIR__) . '/config/db.php';
-
-// --- PASSO 1 (NOVO): (RE)CRIAÇÃO DA ESTRUTURA DO BANCO DE DADOS ---
-print_status("PASSO 1: Verificando e (Re)Criando a estrutura das tabelas...", 'title');
-
-$sql_schema = "
-SET FOREIGN_KEY_CHECKS = 0;
-
-DROP TABLE IF EXISTS `pokemon_golpes`;
-DROP TABLE IF EXISTS `tipo_eficacia`;
-DROP TABLE IF EXISTS `usuarios`;
-DROP TABLE IF EXISTS `pokemon`;
-DROP TABLE IF EXISTS `golpes`;
-DROP TABLE IF EXISTS `tipos`;
-
-CREATE TABLE `tipos` (
-  `id` INT PRIMARY KEY AUTO_INCREMENT,
-  `nome` VARCHAR(50) NOT NULL UNIQUE
-);
-
-CREATE TABLE `pokemon` (
-  `id` INT PRIMARY KEY,
-  `nome` VARCHAR(100) NOT NULL,
-  `tipo1_id` INT NOT NULL,
-  `tipo2_id` INT NULL,
-  `hp` INT NOT NULL,
-  `ataque` INT NOT NULL,
-  `defesa` INT NOT NULL,
-  `especial` INT NOT NULL,
-  `velocidade` INT NOT NULL,
-  FOREIGN KEY (`tipo1_id`) REFERENCES `tipos`(`id`),
-  FOREIGN KEY (`tipo2_id`) REFERENCES `tipos`(`id`)
-);
-
-CREATE TABLE `golpes` (
-  `id` INT PRIMARY KEY AUTO_INCREMENT,
-  `nome` VARCHAR(100) NOT NULL,
-  `poder` INT NOT NULL,
-  `tipo_id` INT NOT NULL,
-  `categoria` ENUM('fisico', 'especial') NOT NULL,
-  FOREIGN KEY (`tipo_id`) REFERENCES `tipos`(`id`)
-);
-
-CREATE TABLE `usuarios` (
-  `id` INT PRIMARY KEY AUTO_INCREMENT,
-  `email` VARCHAR(255) NOT NULL UNIQUE,
-  `senha` VARCHAR(255) NOT NULL,
-  `perfil` ENUM('admin', 'comum') NOT NULL DEFAULT 'comum'
-);
-
-CREATE TABLE `pokemon_golpes` (
-  `pokemon_id` INT NOT NULL,
-  `golpe_id` INT NOT NULL,
-  PRIMARY KEY (`pokemon_id`, `golpe_id`),
-  FOREIGN KEY (`pokemon_id`) REFERENCES `pokemon`(`id`),
-  FOREIGN KEY (`golpe_id`) REFERENCES `golpes`(`id`)
-);
-
-CREATE TABLE `tipo_eficacia` (
-  `atacante_tipo_id` INT NOT NULL,
-  `defensor_tipo_id` INT NOT NULL,
-  `multiplicador` DECIMAL(2,1) NOT NULL,
-  PRIMARY KEY (`atacante_tipo_id`, `defensor_tipo_id`),
-  FOREIGN KEY (`atacante_tipo_id`) REFERENCES `tipos`(`id`),
-  FOREIGN KEY (`defensor_tipo_id`) REFERENCES `tipos`(`id`)
-);
-
-SET FOREIGN_KEY_CHECKS = 1;
-";
-
-// Como estamos a executar vários comandos SQL de uma só vez, usamos mysqli_multi_query
-if (mysqli_multi_query($conexao, $sql_schema)) {
-    // É preciso limpar os resultados de multi-query antes de continuar
-    while (mysqli_next_result($conexao)) {;}
-    print_status("Estrutura do banco de dados criada com sucesso.", 'success');
-} else {
-    die(print_status("Erro ao criar a estrutura do banco de dados: " . mysqli_error($conexao), 'error'));
+if ($conexao === false) {
+    die(print_status("Erro: A base de dados não foi encontrada. Por favor, execute primeiro o script 'criar_estrutura.php'.", "error"));
 }
 
-// --- PASSO 2: BUSCAR E INSERIR TIPOS ---
+
+// --- PASSO 1: LIMPEZA DAS TABELAS RELEVANTES ---
+print_status("PASSO 1: Limpando dados antigos de Pokémon e Tipos...", 'title');
+mysqli_query($conexao, "SET FOREIGN_KEY_CHECKS = 0");
+mysqli_query($conexao, "TRUNCATE TABLE `pokemon_golpes`");
+mysqli_query($conexao, "TRUNCATE TABLE `tipo_eficacia`");
+mysqli_query($conexao, "TRUNCATE TABLE `pokemon`");
+mysqli_query($conexao, "TRUNCATE TABLE `tipos`");
+mysqli_query($conexao, "SET FOREIGN_KEY_CHECKS = 1");
+print_status("Tabelas limpas com sucesso.", 'success');
+
+$tipos_map_local = [];
+
+// --- PASSO 2: BUSCAR E INSERIR TODOS OS TIPOS ---
 print_status("PASSO 2: Buscando e inserindo TODOS os tipos existentes...", 'title');
 $all_types_data_json = @file_get_contents("https://pokeapi.co/api/v2/type/");
 if(!$all_types_data_json) die(print_status("Falha ao contactar a PokéAPI para buscar a lista de tipos.", 'error'));
@@ -118,15 +57,40 @@ foreach ($all_types_data['results'] as $type_entry) {
 $sql_insert_tipos = "INSERT INTO `tipos` (nome) VALUES " . implode(', ', $tipos_para_inserir);
 mysqli_query($conexao, $sql_insert_tipos);
 
-$tipos_map_local = [];
 $resultado_tipos = mysqli_query($conexao, "SELECT id, nome FROM `tipos`");
 while ($tipo = mysqli_fetch_assoc($resultado_tipos)) {
     $tipos_map_local[$tipo['nome']] = $tipo['id'];
 }
 print_status(count($tipos_map_local) . " tipos inseridos e mapeados.", 'success');
 
-// --- PASSO 3: BUSCAR E INSERIR POKÉMON ---
-print_status("PASSO 3: Buscando e inserindo os 151 Pokémon...", 'title');
+
+// --- PASSO 3: INSERINDO A TABELA DE EFICÁCIA DE TIPOS ---
+print_status("PASSO 3: Inserindo a Tabela de Efetividade de Tipos (Geração 1)...", 'title');
+$sql_eficacia = "
+INSERT INTO `tipo_eficacia` (`atacante_tipo_id`, `defensor_tipo_id`, `multiplicador`) VALUES
+(1, 13, 0.5), (1, 14, 0.0), (2, 2, 0.5), (2, 3, 0.5), (2, 5, 2.0), (2, 6, 2.0), (2, 12, 2.0),
+(2, 13, 0.5), (2, 15, 0.5), (3, 2, 2.0), (3, 3, 0.5), (3, 5, 0.5), (3, 9, 2.0), (3, 13, 2.0),
+(3, 15, 0.5), (4, 3, 2.0), (4, 4, 0.5), (4, 5, 0.5), (4, 9, 0.0), (4, 10, 2.0), (4, 15, 0.5),
+(5, 2, 0.5), (5, 3, 2.0), (5, 5, 0.5), (5, 8, 0.5), (5, 9, 2.0), (5, 10, 0.5), (5, 12, 0.5),
+(5, 13, 2.0), (5, 15, 0.5), (6, 3, 0.5), (6, 5, 2.0), (6, 6, 0.5), (6, 9, 2.0), (6, 10, 2.0),
+(6, 15, 2.0), (7, 1, 2.0), (7, 6, 2.0), (7, 8, 0.5), (7, 10, 0.5), (7, 11, 0.5), (7, 12, 0.5),
+(7, 13, 2.0), (7, 14, 0.0), (8, 5, 2.0), (8, 8, 0.5), (8, 9, 0.5), (8, 12, 2.0), (8, 13, 0.5),
+(8, 14, 0.5), (9, 2, 2.0), (9, 4, 2.0), (9, 5, 0.5), (9, 8, 2.0), (9, 10, 0.0), (9, 12, 0.5),
+(9, 13, 2.0), (10, 4, 0.5), (10, 5, 2.0), (10, 7, 2.0), (10, 12, 2.0), (10, 13, 0.5),
+(11, 7, 2.0), (11, 8, 2.0), (11, 11, 0.5), (12, 2, 0.5), (12, 5, 2.0), (12, 7, 0.5),
+(12, 8, 2.0), (12, 10, 0.5), (12, 11, 2.0), (12, 14, 0.5), (13, 2, 2.0), (13, 6, 2.0),
+(13, 7, 0.5), (13, 9, 0.5), (13, 10, 2.0), (13, 12, 2.0), (14, 1, 0.0), (14, 11, 0.0),
+(14, 14, 2.0), (15, 15, 2.0);
+";
+if (mysqli_query($conexao, $sql_eficacia)) {
+    print_status("Tabela de eficácia populada com sucesso.", 'success');
+} else {
+    die(print_status("Erro ao popular a tabela de eficácia: " . mysqli_error($conexao), 'error'));
+}
+
+
+// --- PASSO 4: BUSCAR E INSERIR POKÉMON ---
+print_status("PASSO 4: Buscando e inserindo os 151 Pokémon...", 'title');
 $pokemon_para_inserir = [];
 
 for ($pokemon_id = 1; $pokemon_id <= 151; $pokemon_id++) {
@@ -175,11 +139,11 @@ for ($pokemon_id = 1; $pokemon_id <= 151; $pokemon_id++) {
     
     $pokemon_para_inserir[] = "({$pokemon_id}, '{$nome}', {$tipo1_id}, {$tipo2_id}, {$hp}, {$ataque}, {$defesa}, {$especial}, {$velocidade})";
 
-    usleep(50000); // Pausa para não sobrecarregar a API
+    usleep(50000);
 }
 
-// --- PASSO 4: INSERÇÃO FINAL DOS POKÉMON ---
-print_status("PASSO 4: Inserindo Pokémon na base de dados...", 'title');
+// --- PASSO 5: INSERÇÃO FINAL DOS POKÉMON ---
+print_status("PASSO 5: Inserindo Pokémon na base de dados...", 'title');
 if (!empty($pokemon_para_inserir)) {
     $sql_insert_pokemon = "INSERT INTO `pokemon` (id, nome, tipo1_id, tipo2_id, hp, ataque, defesa, especial, velocidade) VALUES " . implode(', ', $pokemon_para_inserir);
     if(mysqli_query($conexao, $sql_insert_pokemon)){
