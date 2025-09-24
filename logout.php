@@ -1,11 +1,9 @@
 <?php
-session_start(); // Inicia a sessão para poder aceder a ela
+session_start();
+require_once 'helpers.php'; // Inclui o nosso novo ficheiro de ajudantes
 
-session_unset(); // Remove todas as variáveis da sessão (ex: 'user_id')
+session_unset();
+session_destroy();
 
-session_destroy(); // Destrói a sessão por completo
-
-// Redireciona o utilizador para a página de login
-header("Location: login.php");
-exit;
+redirecionar_com_cache_limpa('login.php');
 ?>

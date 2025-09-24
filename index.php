@@ -68,7 +68,16 @@ while ($linha = mysqli_fetch_assoc($resultado_eficacia)) {
     <div class="battle-scene">
         <div class="top-right-link">
             <?php if (isset($_SESSION['user_id'])): ?>
-                <a href="admin/index.php">Painel Admin</a>
+                
+                <span style="margin-right: 5px;">Olá, <?php echo htmlspecialchars(explode('@', $_SESSION['user_email'])[0]); ?>!</span>
+                
+                <?php if ($_SESSION['user_perfil'] === 'admin'): ?>
+                    <a href="admin/index.php">Painel Admin</a>
+                    <span style="margin: 0 5px;">|</span>
+                <?php endif; ?>
+
+                <a href="logout.php">Sair</a>
+
             <?php else: ?>
                 <a href="login.php">Login / Registar</a>
             <?php endif; ?>
@@ -138,15 +147,3 @@ while ($linha = mysqli_fetch_assoc($resultado_eficacia)) {
             <div class="results-container">
                 <button id="calcular_btn">CALCULAR</button>
                 <div id="resultado_dano">Selecione os Pokémon e um golpe para calcular o dano.</div>
-            </div>
-        </div>
-    </div>
-
-    <script src="public/js/script.js"></script>
-</body>
-</html>
-<?php
-if ($conexao) {
-    mysqli_close($conexao);
-}
-?>

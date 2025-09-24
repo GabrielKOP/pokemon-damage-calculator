@@ -1,5 +1,12 @@
 <?php
+// ---- CÓDIGO DE DEPURAÇÃO: Adicionado para mostrar erros ----
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+// -----------------------------------------------------------
+
 session_start();
+require_once 'helpers.php';
 require_once 'config/db.php';
 
 if ($conexao === false) {
@@ -40,8 +47,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             if (mysqli_stmt_execute($stmt_insert)) {
                 $_SESSION['sucesso_registo'] = "Conta criada com sucesso! Podes agora fazer o login.";
-                header("Location: login.php");
-                exit;
+                redirecionar_com_cache_limpa('login.php');
             } else {
                 $erro = "Ocorreu um erro. Tente novamente.";
             }

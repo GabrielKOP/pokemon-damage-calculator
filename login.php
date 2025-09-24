@@ -1,9 +1,14 @@
 <?php
 session_start();
+require_once 'helpers.php'; // Inclui o nosso novo ficheiro de ajudantes
 
+// Redireciona utilizadores já logados para o sítio correto
 if (isset($_SESSION['user_id'])) {
-    header("Location: admin/index.php");
-    exit;
+    if ($_SESSION['user_perfil'] === 'admin') {
+        redirecionar_com_cache_limpa('admin/index.php');
+    } else {
+        redirecionar_com_cache_limpa('index.php');
+    }
 }
 
 require_once 'config/db.php';
@@ -40,8 +45,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $_SESSION['user_id'] = $utilizador['id'];
                     $_SESSION['user_email'] = $utilizador['email'];
                     $_SESSION['user_perfil'] = $utilizador['perfil'];
-                    header("Location: admin/index.php");
-                    exit;
+
+                    if ($utilizador['perfil'] === 'admin') {
+                        redirecionar_com_cache_limpa('admin/index.php');
+                    } else {
+                        redirecionar_com_cache_limpa('index.php');
+                    }
                 } else {
                     $erro_login = "Email ou senha inválidos.";
                 }
@@ -60,12 +69,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link rel="stylesheet" href="public/css/auth.css?v=1.1">
+    <link rel="stylesheet" href="public/css/auth.css?v=1.0">
 </head>
 <body>
     <div class="auth-container">
         <a href="index.php" class="back-link">← Voltar à Calculadora</a>
-
         <h2>Login</h2>
         <?php if (!empty($erro_login)): ?><p class="message error"><?php echo $erro_login; ?></p><?php endif; ?>
         <?php if (!empty($sucesso)): ?><p class="message success"><?php echo $sucesso; ?></p><?php endif; ?>

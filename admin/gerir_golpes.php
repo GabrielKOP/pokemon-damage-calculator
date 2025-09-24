@@ -2,7 +2,8 @@
 session_start();
 require_once '../config/db.php';
 
-if (!isset($_SESSION['user_id'])) {
+// --- LINHA DE SEGURANÇA ATUALIZADA ---
+if (!isset($_SESSION['user_id']) || $_SESSION['user_perfil'] !== 'admin') {
     header("Location: ../login.php");
     exit;
 }

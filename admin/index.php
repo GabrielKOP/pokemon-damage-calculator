@@ -1,9 +1,9 @@
 <?php
 session_start();
+require_once '../helpers.php'; // O caminho para o helpers.php muda aqui
 
-if (!isset($_SESSION['user_id'])) {
-    header("Location: ../login.php");
-    exit;
+if (!isset($_SESSION['user_id']) || $_SESSION['user_perfil'] !== 'admin') {
+    redirecionar_com_cache_limpa('../login.php');
 }
 ?>
 <!DOCTYPE html>
