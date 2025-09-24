@@ -1,0 +1,110 @@
+/* Estilos para as páginas de Autenticação (Login, Registo, etc.) */
+/* --- ESTILOS BASE (MOBILE FIRST) --- */
+
+:root {
+    /* Paleta de cores inspirada no Showdown, mas com o nosso toque */
+    --cor-fundo: #1e293b;      /* Azul escuro/ardósia */
+    --cor-painel: #334155;     /* Azul/cinza um pouco mais claro */
+    --cor-texto: #e2e8f0;      /* Cinza muito claro, quase branco */
+    --cor-borda: #475569;      /* Cinza médio */
+    --cor-principal: #e44d26;  /* O vermelho/laranja do nosso botão original */
+    --cor-principal-hover: #f97316; /* Laranja para o efeito hover */
+    --cor-link: #38bdf8;       /* Azul claro para links */
+    --cor-sucesso: #166534;    /* Verde escuro para fundo de sucesso */
+    --cor-erro: #991b1b;       /* Vermelho escuro para fundo de erro */
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: var(--cor-fundo);
+    color: var(--cor-texto);
+    
+    /* --- CÓDIGO DE CENTRALIZAÇÃO --- */
+    /* Garante que o conteúdo dentro do body fique perfeitamente centrado */
+    display: flex;
+    justify-content: center; /* Alinha horizontalmente no centro */
+    align-items: center;   /* Alinha verticalmente no centro */
+    min-height: 100vh;     /* Garante que o body ocupe a altura toda da tela */
+    padding: 20px;
+}
+
+.auth-container {
+    background-color: var(--cor-painel);
+    padding: 2rem;
+    border-radius: 8px;
+    border: 1px solid var(--cor-borda);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    width: 100%;
+    max-width: 400px;
+}
+
+.auth-container h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: var(--cor-texto);
+}
+
+.auth-container form div {
+    margin-bottom: 1rem;
+}
+
+.auth-container label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.9em;
+}
+
+.auth-container input[type="email"],
+.auth-container input[type="password"] {
+    width: 100%;
+    padding: 0.8rem;
+    background-color: var(--cor-fundo);
+    border: 1px solid var(--cor-borda);
+    border-radius: 4px;
+    color: var(--cor-texto);
+    font-size: 1em;
+}
+
+.auth-button {
+    width: 100%;
+    padding: 0.8rem;
+    border: none;
+    border-radius: 4px;
+    background-color: var(--cor-principal);
+    color: white;
+    font-weight: bold;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.auth-button:hover {
+    background-color: var(--cor-principal-hover);
+}
+
+.auth-links {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+    font-size: 0.8em;
+}
+
+.auth-links a, .auth-container > p a {
+    color: var(--cor-link);
+    text-decoration: none;
+}
+
+.auth-links a:hover, .auth-container > p a:hover {
+    text-decoration: underline;
+}
+
+.message {
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    border: 1px solid transparent;
+    text-align: center;
+    word-break: break-all;
+}
+.message.success { background-color: var(--cor-sucesso); border-color: #22c55e; color: #f0fdf4; }
+.message.error { background-color: var(--cor-erro); border-color: #ef4444; color: #fef2f2; }

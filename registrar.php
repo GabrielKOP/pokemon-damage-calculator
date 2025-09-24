@@ -2,7 +2,6 @@
 session_start();
 require_once 'config/db.php';
 
-// Se a base de dados não existir, mostra a mensagem de setup amigável.
 if ($conexao === false) {
     die("<h1>Bem-vindo!</h1><p>A base de dados ainda não foi configurada. Por favor, execute os scripts de setup primeiro.</p>");
 }
@@ -56,31 +55,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registar Nova Conta</title>
-    <link rel="stylesheet" href="public/css/style.css">
-    <style>.login-container a { color: #007bff; text-decoration: none; } .login-container a:hover { text-decoration: underline; }</style>
+    <link rel="stylesheet" href="public/css/auth.css">
 </head>
 <body>
-    <div class="login-container" style="max-width: 400px; margin: 50px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); color: #333; font-family: Arial, sans-serif;">
-        <h2 style="text-align:center;">Criar Nova Conta</h2>
-        <?php if ($erro): ?><p style="color: red; text-align:center;"><?php echo $erro; ?></p><?php endif; ?>
+    <div class="auth-container">
+        <h2>Criar Nova Conta</h2>
+        <?php if ($erro): ?><p class="message error"><?php echo $erro; ?></p><?php endif; ?>
         
         <form action="registrar.php" method="POST">
-            <div style="margin-bottom: 15px;">
+            <div>
                 <label for="email">Email:</label>
-                <input type="email" name="email" id="email" required style="width: 100%; padding: 8px; font-family: Arial;">
+                <input type="email" name="email" id="email" required>
             </div>
-            <div style="margin-bottom: 15px;">
+            <div>
                 <label for="senha">Senha (mín. 8 caracteres):</label>
-                <input type="password" name="senha" id="senha" required style="width: 100%; padding: 8px; font-family: Arial;">
+                <input type="password" name="senha" id="senha" required>
             </div>
-            <div style="margin-bottom: 20px;">
+            <div>
                 <label for="confirmar_senha">Confirmar Senha:</label>
-                <input type="password" name="confirmar_senha" id="confirmar_senha" required style="width: 100%; padding: 8px; font-family: Arial;">
+                <input type="password" name="confirmar_senha" id="confirmar_senha" required>
             </div>
-            <button type="submit" id="calcular_btn" style="width: 100%; border: none; font-size: 1em;">Registar</button>
+            <button type="submit" class="auth-button">Registar</button>
         </form>
-        <p style="text-align: center; margin-top: 15px;">
+        <p style="text-align: center; margin-top: 1rem;">
             Já tem uma conta? <a href="login.php">Faça o login</a>
         </p>
     </div>

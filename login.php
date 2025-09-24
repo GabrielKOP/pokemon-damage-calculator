@@ -58,29 +58,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link rel="stylesheet" href="public/css/style.css">
-    <style>.login-container a { color: #007bff; text-decoration: none; } .login-container a:hover { text-decoration: underline; }</style>
+    <link rel="stylesheet" href="public/css/auth.css">
 </head>
 <body>
-    <div class="login-container" style="max-width: 400px; margin: 50px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); color: #333; font-family: Arial, sans-serif;">
-        <h2 style="text-align:center;">Login</h2>
-        <?php if (!empty($erro_login)): ?><p style="color: red; text-align:center;"><?php echo $erro_login; ?></p><?php endif; ?>
-        <?php if (!empty($sucesso)): ?><p style="color: green; text-align:center;"><?php echo $sucesso; ?></p><?php endif; ?>
+    <div class="auth-container">
+        <h2>Login</h2>
+        <?php if (!empty($erro_login)): ?><p class="message error"><?php echo $erro_login; ?></p><?php endif; ?>
+        <?php if (!empty($sucesso)): ?><p class="message success"><?php echo $sucesso; ?></p><?php endif; ?>
         
         <form action="login.php" method="POST">
-            <div style="margin-bottom: 15px;">
+            <div>
                 <label for="email">Email:</label>
-                <input type="email" name="email" id="email" required style="width: 100%; padding: 8px; font-family: Arial;">
+                <input type="email" name="email" id="email" required>
             </div>
-            <div style="margin-bottom: 15px;">
+            <div>
                 <label for="senha">Senha:</label>
-                <input type="password" name="senha" id="senha" required style="width: 100%; padding: 8px; font-family: Arial;">
+                <input type="password" name="senha" id="senha" required>
             </div>
-            <button type="submit" id="calcular_btn" style="width: 100%; border: none; font-size: 1em;">Entrar</button>
+            <button type="submit" class="auth-button">Entrar</button>
         </form>
-
-        <div style="display: flex; justify-content: space-between; margin-top: 15px; font-size: 0.8em;">
+        <div class="auth-links">
             <a href="esqueci_senha.php">Esqueceu a senha?</a>
             <a href="registrar.php">Não tem uma conta? Registe-se</a>
         </div>

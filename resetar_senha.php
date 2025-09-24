@@ -6,7 +6,9 @@ $token = $_GET['token'] ?? '';
 $erro = '';
 $token_valido = false;
 
-if (empty($token)) {
+if ($conexao === false) {
+    $erro = "Erro de configuração da base de dados.";
+} elseif (empty($token)) {
     $erro = "Token não fornecido.";
 } else {
     $token_hash = hash('sha256', $token);
@@ -50,29 +52,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $token_valido) {
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
-<head><title>Redefinir Senha</title><link rel="stylesheet" href="public/css/style.css">
-<style>.login-container a { color: #007bff; }</style>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redefinir Senha</title>
+    <link rel="stylesheet" href="public/css/auth.css">
 </head>
 <body>
-    <div class="login-container" style="max-width: 400px; margin: 50px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); color: #333; font-family: Arial, sans-serif;">
+    <div class="auth-container">
         <h2>Redefinir Nova Senha</h2>
-        <?php if ($erro): ?><p style="color: red;"><?php echo $erro; ?></p><?php endif; ?>
+        <?php if ($erro): ?><p class="message error"><?php echo $erro; ?></p><?php endif; ?>
         
         <?php if ($token_valido): ?>
         <form action="resetar_senha.php?token=<?php echo htmlspecialchars($token); ?>" method="POST">
-            <div style="margin-bottom: 15px;">
+            <div>
                 <label for="senha">Nova Senha:</label>
-                <input type="password" name="senha" id="senha" required style="width: 100%; padding: 8px; font-family: Arial;">
+                <input type="password" name="senha" id="senha" required>
             </div>
-            <div style="margin-bottom: 20px;">
+            <div>
                 <label for="confirmar_senha">Confirmar Nova Senha:</label>
-                <input type="password" name="confirmar_senha" id="confirmar_senha" required style="width: 100%; padding: 8px; font-family: Arial;">
+                <input type="password" name="confirmar_senha" id="confirmar_senha" required>
             </div>
-            <button type="submit" id="calcular_btn" style="width: 100%; border: none; font-size: 1em;">Redefinir Senha</button>
+            <button type="submit" class="auth-button">Redefinir Senha</button>
         </form>
         <?php else: ?>
-        <p>Por favor, peça um novo link de redefinição.</p>
-        <a href="esqueci_senha.php">Pedir novo link</a>
+        <p style="text-align: center; margin-top: 1rem;"><a href="esqueci_senha.php">Pedir novo link</a></p>
         <?php endif; ?>
     </div>
 </body>
