@@ -1,9 +1,40 @@
 <?php
+// INICIA A SESSÃO PARA VERIFICAR SE O UTILIZADOR ESTÁ LOGADO
+session_start();
+
 require_once 'config/db.php';
 
 // VERIFICAÇÃO PRINCIPAL: Confere se a base de dados existe
 if ($conexao === false) {
-    die("<h1>Bem-vindo! Parece que esta é uma nova instalação.</h1><p>A base de dados 'pokemon_calculator' não foi encontrada. Por favor, execute primeiro os scripts de setup na pasta <strong>/scripts/</strong> para criar e popular a base de dados.</p><p>A ordem de execução recomendada é:<ol><li>scripts/criar_estrutura.php(cria o banco de dados)</li><li>scripts/povoar_pokemon_e_tipos.php (povoa as tabelas com os pokémon e tipos)</li><li>scripts/povoar_golpes.php (cria os golpes)</li><li>scripts/ligar_golpes_a_pokemon.php (liga os golpes aos pokémon)</li></ol></p><p>Depois, não se esqueça de executar o script para criar o utilizador administrador.</p>");
+    die('<!DOCTYPE html>
+        <html lang="pt-br">
+        <head>
+            <meta charset="UTF-8">
+            <title>Configuração Necessária</title>
+            <style>
+                body { font-family: Arial, sans-serif; background-color: #f0f2f5; color: #333; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; padding: 20px; }
+                .container { text-align: left; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); max-width: 800px; }
+                h1 { color: #e44d26; text-align: center; }
+                code { background: #eee; padding: 2px 5px; border-radius: 4px; font-family: monospace; }
+                ol { padding-left: 20px; }
+                li { margin-bottom: 10px; }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>Bem-vindo! Parece que esta é uma nova instalação.</h1>
+                <p>A base de dados \'pokemon_calculator\' não foi encontrada. Por favor, execute primeiro os scripts de setup na pasta <strong>/scripts/</strong> para criar e popular a base de dados.</p>
+                <p>A ordem de execução recomendada é:</p>
+                <ol>
+                    <li><code>scripts/criar_estrutura.php</code> (cria a base de dados e as tabelas)</li>
+                    <li><code>scripts/povoar_pokemon_e_tipos.php</code> (povoa as tabelas com os pokémon e tipos)</li>
+                    <li><code>scripts/povoar_golpes.php</code> (cria os golpes)</li>
+                    <li><code>scripts/ligar_golpes.php</code> (liga os golpes aos pokémon)</li>
+                </ol>
+                <p>Depois, não se esqueça de criar o utilizador administrador seguindo as instruções no README.</p>
+            </div>
+        </body>
+        </html>');
 }
 
 // Se o script continuar, a conexão foi um sucesso.
@@ -27,7 +58,7 @@ while ($linha = mysqli_fetch_assoc($resultado_eficacia)) {
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="public/css/style.css">
+    <link rel="stylesheet" href="public/css/style.css?v=1.1">
     <script>
         const TabelaDeEficacia = <?php echo json_encode($tabela_eficacia); ?>;
     </script>
@@ -35,6 +66,14 @@ while ($linha = mysqli_fetch_assoc($resultado_eficacia)) {
 <body>
 
     <div class="battle-scene">
+        <div class="top-right-link">
+            <?php if (isset($_SESSION['user_id'])): ?>
+                <a href="admin/index.php">Painel Admin</a>
+            <?php else: ?>
+                <a href="login.php">Login / Registar</a>
+            <?php endif; ?>
+        </div>
+        
         <div class="opponent-area">
             <div class="status-box" id="defensor_status">
                 <div class="info">

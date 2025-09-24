@@ -60,10 +60,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link rel="stylesheet" href="public/css/auth.css">
+    <link rel="stylesheet" href="public/css/auth.css?v=1.1">
 </head>
 <body>
     <div class="auth-container">
+        <a href="index.php" class="back-link">← Voltar à Calculadora</a>
+
         <h2>Login</h2>
         <?php if (!empty($erro_login)): ?><p class="message error"><?php echo $erro_login; ?></p><?php endif; ?>
         <?php if (!empty($sucesso)): ?><p class="message success"><?php echo $sucesso; ?></p><?php endif; ?>
@@ -79,6 +81,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
             <button type="submit" class="auth-button">Entrar</button>
         </form>
+
         <div class="auth-links">
             <a href="esqueci_senha.php">Esqueceu a senha?</a>
             <a href="registrar.php">Não tem uma conta? Registe-se</a>

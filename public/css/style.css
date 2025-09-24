@@ -2,7 +2,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
 /* --- ESTILOS BASE (MOBILE FIRST) --- */
-
 * {
     margin: 0;
     padding: 0;
@@ -24,10 +23,10 @@ body {
     width: 100%;
     max-width: 800px;
     border: 8px solid #c0c0c0;
-    background: #fff url('../images/fundo.jpg') no-repeat center center;
+    background: #fff url('../images/fundo-batalha.png') no-repeat center center;
     background-size: cover;
     padding: 1rem;
-    position: relative;
+    position: relative; /* Adicionado para posicionar o link de login */
     image-rendering: pixelated;
 }
 
@@ -61,7 +60,6 @@ body {
     padding: 0.5rem;
     background-color: rgba(240, 240, 240, 0.9);
     color: #333;
-    /* ALTERAÇÃO: Tipografia Fluida */
     font-size: clamp(0.5rem, 2.2vw, 0.8rem);
 }
 .status-box .info {
@@ -70,7 +68,6 @@ body {
     margin-bottom: 4px;
 }
 .status-box .info small {
-    /* ALTERAÇÃO: Tipografia Fluida */
     font-size: clamp(0.4rem, 2vw, 0.7rem);
 }
 .hp-bar-container {
@@ -92,7 +89,6 @@ body {
 .hp-text {
     text-align: right;
     margin-top: 4px;
-    /* ALTERAÇÃO: Tipografia Fluida */
     font-size: clamp(0.5rem, 2vw, 0.7rem);
 }
 
@@ -119,11 +115,9 @@ select {
     width: 100%;
     font-family: 'Press Start 2P', cursive;
     padding: 0.3rem;
-    /* ALTERAÇÃO: Tipografia Fluida */
     font-size: clamp(0.5rem, 2vw, 0.7rem);
 }
 label {
-    /* ALTERAÇÃO: Tipografia Fluida */
     font-size: clamp(0.6rem, 2.5vw, 0.7rem);
 }
 .results-container {
@@ -145,7 +139,6 @@ label {
 }
 #resultado_dano {
     text-align: center;
-    /* ALTERAÇÃO: Tipografia Fluida */
     font-size: clamp(0.6rem, 2.5vw, 0.8rem);
 }
 
@@ -153,6 +146,9 @@ label {
 @media (min-width: 768px) {
     .opponent-area, .player-area { height: 180px; }
     .sprite-container img { width: 160px; height: 160px; }
+    .status-box { font-size: 0.8rem; }
+    .status-box .info small { font-size: 0.8rem; }
+    .hp-text { font-size: 0.7rem; }
     
     .controls-container { flex-direction: row; }
     .selection-column, .attack-column { flex-basis: 50%; }
@@ -160,4 +156,27 @@ label {
     .results-container { flex-direction: row; align-items: center; }
     #calcular_btn { width: auto; }
     #resultado_dano { margin-left: 1rem; text-align: left; }
+}
+
+/* --- ESTILOS PARA O LINK DE LOGIN/ADMIN --- */
+.top-right-link {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 0.7rem;
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: 2px solid #c0c0c0;
+    z-index: 10;
+}
+
+.top-right-link a {
+    color: #fff;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.top-right-link a:hover {
+    color: #facc15;
 }
