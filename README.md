@@ -57,8 +57,8 @@ Abra um terminal e clone o projeto para a pasta `htdocs` do seu XAMPP.
 
 ```bash
 cd C:/xampp/htdocs/
-git clone https://github.com/SEU-USUARIO/pokemon-damage-calculator.git
-cd pokemon-damage-calculator
+git clone https://github.com/SEU-USUARIO/pokemon_calculator.git
+cd pokemon_calculator
 ```
 
 **Passo 2: Executar o Setup da Base de Dados**
@@ -78,18 +78,18 @@ A configuração da base de dados é totalmente automática. Use o método mais 
     php scripts/povoar_golpes.php
 
     # 4. Liga os Golpes aos Pokémon
-    php scripts/ligar_golpes_a_pokemon.php
+    php scripts/ligar_golpes.php
     ```
 
 **Passo 4: Criar o Primeiro Administrador**
 O primeiro administrador é criado de forma segura, sem scripts temporários.
 
-1.  Aceda à página de registo no seu navegador: `http://localhost/pokemon-damage-calculator/registrar.php`.
-2.  Crie a sua primeira conta. Por defeito, ela terá o perfil de utilizador "comum".
+1.  Acesse à página de registo no seu navegador: `http://localhost/pokemon_calculator/registrar.php`.
+2.  Crie a sua primeira conta. Ela terá o perfil de utilizador "comum".
 3.  Abra o **phpMyAdmin**, navegue até à tabela `usuarios` na base de dados `pokemon_calculator`.
 4.  Encontre o utilizador que acabou de criar e edite o seu registo: altere o valor na coluna `perfil` de `comum` para `admin`.
 
 **Passo 5: Pronto para Usar\!**
 
-  - **Acede à Calculadora:** `http://localhost/pokemon-damage-calculator/`
-  - **Acede ao Painel de Admin:** `http://localhost/pokemon-damage-calculator/login.php` (use as credenciais que acabou de criar e promover a admin).
+  - **Acesse à Calculadora:** `http://localhost/pokemon_calculator/`
+  - **Acessee ao Painel de Admin:** `http://localhost/pokemon_calculator/login.php` (use as credenciais que acabou de criar e promover a admin).
