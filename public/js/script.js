@@ -1,3 +1,5 @@
+console.log("O script.js versão 2.0 foi carregado e está a ser executado!");
+
 document.addEventListener('DOMContentLoaded', () => {
     // Seletores de elementos
     const seletorAtacante = document.getElementById('pokemon_atacante');
